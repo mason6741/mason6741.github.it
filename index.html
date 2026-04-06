@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weather App</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+</head>
+
+<!--Used AI to update the overall look of the app with Claude Ai-->
+    <body class="bg-dark min-vh-100 d-flex align-items-center justify-content-center">
+        <div class="container mt-5" style="max-width: 400px;">
+            <div class="card bg-dark border border-secondary text-white shadow-lg rounded-4">
+                <div class="card-body text-center p-5">
+
+                <!--city name-->
+                <h1 class="fw-light text-white mb-1">Cookeville</h1>
+                <p class="text-secondary text-uppercase mb-4" style="letter-spacing: 0.1em; font-size: 0.75rem;">Tennessee, US</p>
+
+                <!--weather icon-->
+                <i class="bi bi-brightness-alt-high-fill display-1 text-warning"></i>
+                <p id="conditionText" class="text-secondary text-uppercase mt-2 mb-3" style="letter-spacing: 0.08em; font-size: 0.8rem;">Sunny</p>
+
+                <p class="display-4 fw-light text-white mb-3">
+                    <i class="bi bi-thermometer-half text-danger fs-4 me-1"></i>
+                    <span id="tempDisplay">72°F</span>
+                </p>
+
+                <hr class="border-secondary opacity-25">
+
+                <p class="fs-5 text-info mb-0">
+                    <i class="bi bi-moisture me-1"></i>
+                    <span id="precipitationDisplay">35%</span>
+                </p>
+                </div>
+            </div>
+        </div>
+    
+    <script>
+            fetch("https://api.open-meteo.com/v1/forecast?latitude=36.1682&longitude=-85.5016&current=temperature_2m,relative_humidity_2m,apparent_temperature,precipitation&hourly=temperature_2m,relative_humidity_2m,precipitation_probability,rain&daily=temperature_2m_max,temperature_2m_min,precipitation_probability_max&temperature_unit=fahrenheit&wind_speed_unit=mph&precipitation_unit=inch&timezone=America%2FChicago")
+                //.then(response => response.json())
+                //.then(data => {
+                    //let temp = data.current.tempature_2m;
+                    //let precipitation = data.current.precipitation_2m
+
+                    //document.querySelector("#tempDisplay").textContent = temp + "°F";
+                    //document.querySelector("#precipitationDisplay").textContent = precipitation + "%"
+                
+
+        //})
+            //console.log(data)
+        //.catch(error => console.error(error))
+
+        //commented out the old fetch statement and used AI to help troupleshoot becuase it wasnt wroking
+
+        .then(function(response) {
+        return response.json();
+      })
+
+      // Step 3: Use the data to update the page
+      .then(function(data) {
+
+        // Pull out the values we need
+        let temp = data.current.temperature_2m;
+        let humidity = data.current.relative_humidity_2m;
+        let code = data.current.weathercode;
+
+        // Update the HTML elements
+        document.querySelector("#tempDisplay").textContent = temp + "°F";
+        document.querySelector("#humidityDisplay").textContent = humidity + "%";
+
+        // Update the icon using our function
+        document.querySelector("#weatherIcon").className = getWeatherIcon(code);
+
+      });
+
+      //end of new ai fetch part
+
+        //using Ai to troubleshoot how to get the right icon for different weather conditions (uses "icon swapping")
+        let weatherCode = data.current.weathercode;
+
+        // This function takes a code and returns the right Bootstrap Icon class
+        function getWeatherIcon(code) {
+
+        // Clear sky
+        if (code === 0) {
+            return "bi bi-sun";
+        }
+
+        // Partly cloudy
+        else if (code === 1 || code === 2) {
+            return "bi bi-cloud-sun";
+        }
+
+        // Overcast
+        else if (code === 3) {
+            return "bi bi-clouds";
+        }
+
+        // Rain
+        else if (code >= 51 && code <= 67) {
+            return "bi bi-cloud-rain";
+        }
+
+        // Snow
+        else if (code >= 71 && code <= 77) {
+            return "bi bi-cloud-snow";
+        }
+
+        // Thunderstorm
+        else if (code >= 95 && code <= 99) {
+            return "bi bi-cloud-lightning-rain";
+        }
+
+        // Default fallback
+        else {
+            return "bi bi-cloud";
+        }
+        }
+
+        document.querySelector("#weatherIcon").className = getWeatherIcon(weatherCode);
+
+
+    </script>
+
+
+
+</body>
+</html>
